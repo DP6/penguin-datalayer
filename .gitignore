@@ -1,0 +1,13 @@
+node_modules/
+remote-profile/
+
+schema/*
+!schema/.gitkeep
+
+config/*
+!config/.gitkeep
+
+results/*
+!results/.gitkeep
+
+.vscode

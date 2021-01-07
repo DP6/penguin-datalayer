@@ -1,0 +1,33 @@
+{
+  "name": "dp6-ci-bowser-jr",
+  "version": "1.0.0",
+  "description": "A dataLayer validator",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodemon index.js config_data.json",
+    "start": "node index.js",
+    "debug": "nodemon --inspect index.js config_data.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://source.developers.google.com/p/dp6-repo/r/dp6-ci-bowser-jr"
+  },
+  "author": "Danilo Santos",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^6.10.2",
+    "colors": "^1.4.0",
+    "jspdf": "^2.1.1",
+    "puppeteer": "^2.0.0",
+    "puppeteer-extra": "^3.1.11",
+    "puppeteer-extra-plugin-adblocker": "^2.11.6",
+    "puppeteer-extra-plugin-stealth": "^2.4.11",
+    "puppeteer-extra-plugin-user-data-dir": "^2.2.7",
+    "puppeteer-extra-plugin-user-preferences": "^2.2.7",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
