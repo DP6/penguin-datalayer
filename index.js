@@ -14,16 +14,31 @@ puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker')
 puppeteer.use(AdblockerPlugin({ useCache: false }));
 
-
-let filename = `${__dirname}/results/results_${new Date().getTime()}.pdf`;
+//console.log("params: ", process.argv.slice(2)[0]);
 
 const config_file = process.argv.slice(2)[0]
-  ? process.argv.slice(2)[0]
-  : new Error(
-    "File not specified as start param. Please inform the filename with its extension as --file in start script."
+? process.argv.slice(2)[0]
+: new Error(
+  "File not specified as start param. Please inform the filename with its extension as --file in start script."
   );
 
+// Defining txt as default value.
+let export_opt = 'txt';
 
+// Checking command line params for export option
+if (process.argv.slice(2)[1] === "txt") {
+  export_opt = process.argv.slice(2)[1];
+} else if (process.argv.slice(2)[1] === "pdf") {
+  export_opt = process.argv.slice(2)[1];
+} else {
+  new Error(
+    "Export type not specified as start param. Please inform how you wish to export the results."
+    );
+}
+
+// Defining export extension based on export option extracted from command line params.
+let filename = `${__dirname}/results/results_${new Date().getTime()}.${export_opt}`;
+    
 const config = require(`./config/${config_file}`);
 const schema = require(`./schema/${config.schema_name}`);
 
@@ -125,7 +140,7 @@ const schema = require(`./schema/${config.schema_name}`);
 
   let cleanupEval = () => {
     console.log("Realizing last eval");
-    bowserjr.validateObject(schema, {}, filename, doc);
+    bowserjr.validateObject(schema, {}, filename, doc, export_opt); // Sending export option to ajv.js file.
   };
 
   process.on("exit", cleanupEval);
