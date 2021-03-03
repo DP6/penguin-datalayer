@@ -23,10 +23,10 @@ const config_file = process.argv.slice(2)[0]
   );
 
 // Defining txt as default value.
-let export_opt = 'txt';
+let export_opt = 'xlsx';
 
 // Checking command line params for export option
-if (process.argv.slice(2)[1] === "txt") {
+if (process.argv.slice(2)[1] === "xlsx") {
   export_opt = process.argv.slice(2)[1];
 } else if (process.argv.slice(2)[1] === "pdf") {
   export_opt = process.argv.slice(2)[1];
