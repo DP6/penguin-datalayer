@@ -1,52 +1,44 @@
-const os = require("os");
-const exec = require("child_process").exec;
-const puppeteer = require("puppeteer-extra");
-const req = require("request-promise");
-const fs = require("fs");
-const bowserjr = require("./lib/ajv");
-const { jsPDF } = require("jspdf");
+const os = require('os');
+const exec = require('child_process').exec;
+const puppeteer = require('puppeteer-extra');
+const req = require('request-promise');
+const fs = require('fs');
+const bowserjr = require('./lib/ajv');
+const { jsPDF } = require('jspdf');
 //const iPhone = puppeteer.devices["iPhone 6"];
 
 // Add stealth plugin and use defaults (all tricks to hide puppeteer usage).
 const doc = new jsPDF();
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
-const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker')
+const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 puppeteer.use(AdblockerPlugin({ useCache: false }));
 
 //console.log("params: ", process.argv.slice(2)[0]);
 
 const config_file = process.argv.slice(2)[0]
-? process.argv.slice(2)[0]
-: new Error(
-  "File not specified as start param. Please inform the filename with its extension as --file in start script."
-  );
+  ? process.argv.slice(2)[0]
+  : new Error(
+      'File not specified as start param. Please inform the filename with its extension as --file in start script.'
+    );
 
 // Defining txt as default value.
 let export_opt = 'xlsx';
 
 // Checking command line params for export option
-if (process.argv.slice(2)[1] === "xlsx") {
+if (process.argv.slice(2)[1] === 'xlsx') {
   export_opt = process.argv.slice(2)[1];
-} else if (process.argv.slice(2)[1] === "pdf") {
+} else if (process.argv.slice(2)[1] === 'pdf') {
   export_opt = process.argv.slice(2)[1];
 } else {
-  new Error(
-    "Export type not specified as start param. Please inform how you wish to export the results."
-    );
+  new Error('Export type not specified as start param. Please inform how you wish to export the results.');
 }
 
 // Defining export extension based on export option extracted from command line params.
 let filename = `${__dirname}/results/results_${new Date().getTime()}.${export_opt}`;
-    
+
 const config = require(`./config/${config_file}`);
 const schema = require(`./schema/${config.schema_name}`);
-
-
-
-
-
-
 
 // let startChromeInDebugMode = async () => {
 //   let operatingSystem = os.platform();
@@ -76,13 +68,11 @@ const schema = require(`./schema/${config.schema_name}`);
 // };
 
 (async () => {
-
   // const browser = await puppeteer.connect({
   //   browserWSEndpoint: await startChromeInDebugMode(),
   // });
   const browser = await puppeteer.launch({ headless: false });
   let page = await browser.newPage();
-
 
   // .pages
   // .then((res) => res[0])
@@ -90,26 +80,21 @@ const schema = require(`./schema/${config.schema_name}`);
 
   if (config.gtmPreviewModeURL) await page.goto(config.gtmPreviewModeURL);
 
-
-
   if (config.mobile_enabled === true) {
     await page.emulate(iPhone);
   } else {
     await page.setViewport({ width: 1366, height: 768 });
   }
 
-
-  await page.exposeFunction("bowser", (event) => {
+  await page.exposeFunction('bowser', (event) => {
     bowserjr.validateObject(schema, event, filename, doc);
   });
 
-
-
   async function runAfterGTMDebug() {
-    page.on("load", async () => {
+    page.on('load', async () => {
       await page.waitFor(5000);
       if (page.url() === config.url) {
-        let path = `Url validating:  ${page.url()}\n`
+        let path = `Url validating:  ${page.url()}\n`;
         doc.text(path, 10, 10);
         await page.evaluate(() => {
           //Validate first hits.
@@ -122,27 +107,23 @@ const schema = require(`./schema/${config.schema_name}`);
             bowser(obj);
           };
         });
-      }else {
-        let path = `Path :  ${page.url()}\n`
+      } else {
+        let path = `Path :  ${page.url()}\n`;
         doc.text(path, 10, 10);
       }
     });
 
     await page.goto(config.url);
-
   }
 
   await runAfterGTMDebug();
 
-
-
-  await fs.appendFile(filename, "", () => { });
+  await fs.appendFile(filename, '', () => {});
 
   let cleanupEval = () => {
-    console.log("Realizing last eval");
+    console.log('Realizing last eval');
     bowserjr.validateObject(schema, {}, filename, doc, export_opt); // Sending export option to ajv.js file.
   };
 
-  process.on("exit", cleanupEval);
+  process.on('exit', cleanupEval);
 })();
-

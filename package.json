@@ -1,19 +1,68 @@
 {
-  "name": "dp6-ci-bowser-jr",
-  "version": "1.0.0",
-  "description": "A dataLayer validator",
-  "main": "index.js",
-  "scripts": {
-    "test": "nodemon index.js config_data.json",
-    "start": "node index.js",
-    "debug": "nodemon --inspect index.js config_data.json"
-  },
+  "name": "penguin-datalayer",
+  "version": "0.0.1",
+  "description": "Crawler assistido para validação de objetos enviados à camada de dados (Data Layer)",
   "repository": {
     "type": "git",
-    "url": "https://source.developers.google.com/p/dp6-repo/r/dp6-ci-bowser-jr"
+    "url": "https://github.com/DP6/penguin-datalayer.git"
   },
-  "author": "Danilo Santos",
-  "license": "ISC",
+  "main": "index.js",
+  "scripts": {
+    "format": "prettier --write .",
+    "lint-md": "remark .",
+    "lint-prettier": "npx prettier --check .",
+    "lint": "npm run lint-md && npm run lint-prettier",
+    "unit-test": "mocha ./test/unit  -timeout 8000",
+    "all-test": "npm run unit-test",
+    "test": "npm -- run all-test",
+    "run-local": "nodemon index.js config_data.json",
+    "start": "node index.js",
+    "debug": "nodemon --inspect index.js config_data.json",
+    "coverage": "nyc --reporter=lcov --reporter=cobertura npm run unit-test",
+    "docs": "jsdoc2md *.js > docs/functions.md"
+  },
+  "keywords": [
+    "dp6",
+    "raft suite",
+    "penguin datalayer core",
+    "data quality",
+    "datalayer"
+  ],
+  "release": {
+    "branch": "master",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
+      [
+        "@semantic-release/github"
+      ]
+    ]
+  },
+  "author": "DP6",
+  "contributors": [
+    {
+      "name": "Danilo Santos",
+      "email": "danilo.santos@dp6.com.br"
+    },
+    {
+      "name": "Vanderson Maroni",
+      "email": "vanderson.maroni@dp6.com.br"
+    }
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/DP6/penguin-datalayer/issues"
+  },
+  "homepage": "https://github.com/DP6/penguin-datalayer#readme",
+  "release": {
+    "branch": "master"
+  },
   "dependencies": {
     "ajv": "^6.10.2",
     "colors": "^1.4.0",
@@ -28,6 +77,18 @@
     "request-promise": "^4.2.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "chai": "^4.3.3",
+    "eslint": "^7.21.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "jsdoc-to-markdown": "^7.0.0",
+    "mocha": "^8.3.1",
+    "nyc": "^15.1.0",
+    "prettier": "^2.2.1",
+    "remark": "^13.0.0",
+    "remark-cli": "^9.0.0",
+    "remark-preset-lint-recommended": "^5.0.0",
+    "sinon": "^10.0.0"
   }
 }
