@@ -58,7 +58,17 @@ Após executar o comando, o validador iniciará uma instância do *Chromium*, le
 
 Os hits que forem disparados de forma automática para a camada de dados e estiverem declarados no JSON Schema serão validados de forma automática. Entretanto, o validador necessitará de interação humana caso haja algum hit que necessita de uma ação (click, preenchimento de form, etc.) para ser disparado.
 
-Por padrão, os logs com a validação serão disponibilizados na pasta **results**, em pdf.
+Por padrão, os logs com a validação serão disponibilizados na pasta **results**, em pdf ou xlsx, dependendo do parâmetro que for passado na linha de comando que executa o DataLayer Penguin, como por exemplo:
+
+```nodejs
+npm start config_example.json pdf
+```
+
+ou
+
+```nodejs
+npm start config_example.json xlsx
+```
 
 
 ### JSON Schema
@@ -139,7 +149,7 @@ A estrutura a seguir é um exemplo de um JSON Schema:
 
 ```
 
-###Contribuição
+### Contribuição
 
 O DataLayer Penguin é um projeto Open Source, e portanto, contribuições serão bem vindas
 
