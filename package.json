@@ -24,7 +24,7 @@
   "keywords": [
     "dp6",
     "raft suite",
-    "penguin datalayer core",
+    "penguin datalayer",
     "data quality",
     "datalayer"
   ],
@@ -45,8 +45,7 @@
     ]
   },
   "author": "DP6",
-  "contributors": [
-    {
+  "contributors": [{
       "name": "Danilo Santos",
       "email": "danilo.santos@dp6.com.br"
     },
