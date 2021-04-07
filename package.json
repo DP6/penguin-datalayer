@@ -32,7 +32,8 @@
     "branch": "master"
   },
   "author": "DP6",
-  "contributors": [{
+  "contributors": [
+    {
       "name": "Danilo Santos",
       "email": "danilo.santos@dp6.com.br"
     },
