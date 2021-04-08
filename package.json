@@ -28,9 +28,6 @@
     "data quality",
     "datalayer"
   ],
-  "release": {
-    "branch": "master"
-  },
   "author": "DP6",
   "contributors": [
     {
@@ -47,6 +44,22 @@
     "url": "https://github.com/DP6/penguin-datalayer/issues"
   },
   "homepage": "https://github.com/DP6/penguin-datalayer#readme",
+  "release": {
+    "branch": "master",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
+      [
+        "@semantic-release/github"
+      ]
+    ]
+  },
   "dependencies": {
     "ajv": "^6.10.2",
     "colors": "^1.4.0",
