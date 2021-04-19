@@ -81,3 +81,14 @@ tmp/
 
 # FuseBox cache
 .fusebox/
+
+schema/*
+!schema/.gitkeep
+
+config/*
+!config/.gitkeep
+
+results/*
+!results/.gitkeep
+
+.vscode
