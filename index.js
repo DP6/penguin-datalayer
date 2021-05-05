@@ -104,6 +104,8 @@ const schema = require(`./schema/${config.schema_name}`);
             bowser(obj);
           };
         });
+        await page.waitFor(20000);
+        await browser.close();
       } else {
         let path = `Path :  ${page.url()}\n`;
         //doc.text(path, 10, 10);
