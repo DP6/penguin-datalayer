@@ -3,18 +3,15 @@ const exec = require('child_process').exec;
 const puppeteer = require('puppeteer-extra');
 const req = require('request-promise');
 const fs = require('fs');
-const bowserjr = require('./lib/ajv');
-const { jsPDF } = require('jspdf');
-//const iPhone = puppeteer.devices["iPhone 6"];
+const bowserjr = require('@dp6/penguin-datalayer-core');
+let resultsArray = [];
 
 // Add stealth plugin and use defaults (all tricks to hide puppeteer usage).
-const doc = new jsPDF();
+
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
 puppeteer.use(AdblockerPlugin({ useCache: false }));
-
-//console.log("params: ", process.argv.slice(2)[0]);
 
 const config_file = process.argv.slice(2)[0]
   ? process.argv.slice(2)[0]
@@ -84,7 +81,9 @@ const schema = require(`./schema/${config.schema_name}`);
   }
 
   await page.exposeFunction('bowser', (event) => {
-    bowserjr.validateObject(schema, event, filename, doc);
+    bowserjr.validate(schema, event, function (result) {
+      resultsArray.push(result[0]);
+    });
   });
 
   async function runAfterGTMDebug() {
@@ -92,7 +91,7 @@ const schema = require(`./schema/${config.schema_name}`);
       await page.waitFor(5000);
       if (page.url() === config.url) {
         let path = `Url validating:  ${page.url()}\n`;
-        doc.text(path, 10, 10);
+        //doc.text(path, 10, 10);
         await page.evaluate(() => {
           //Validate first hits.
           window.dataLayer.forEach((elem) => {
@@ -106,7 +105,7 @@ const schema = require(`./schema/${config.schema_name}`);
         });
       } else {
         let path = `Path :  ${page.url()}\n`;
-        doc.text(path, 10, 10);
+        //doc.text(path, 10, 10);
       }
     });
 
@@ -119,7 +118,23 @@ const schema = require(`./schema/${config.schema_name}`);
 
   let cleanupEval = () => {
     console.log('Realizing last eval');
-    bowserjr.validateObject(schema, {}, filename, doc, export_opt); // Sending export option to ajv.js file.
+    bowserjr.validate(schema, {}, function (result) {
+      resultsArray.push(result[0]);
+    });
+    resultsArray.forEach((resultObject) => {
+      if (resultObject) {
+        resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/(\r\n|\n|\r)/gm, '');
+        resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/\s/g, '');
+        resultObject.dataLayerObject = resultObject.dataLayerObject.split(',').join(' ');
+        fs.appendFileSync(
+          filename,
+          `${resultObject.status}, ${resultObject.message}, ${resultObject.dataLayerObject}\n`,
+          (err) => {
+            if (err) throw err;
+          }
+        );
+      }
+    });
   };
 
   process.on('exit', cleanupEval);
