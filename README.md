@@ -166,6 +166,6 @@ Só serão aceito as contribuições que estiverem seguindo os seguintes requisi
 
 **DP6 Koopa-troopa Team**
 
-_e-mail: <koopas@dp6.com.br>_
+_e-mail: <mailto:koopas@dp6.com.br>_
 
 <img src="https://raw.githubusercontent.com/DP6/templates-centro-de-inovacoes/main/public/images/koopa.png" height="100" />
