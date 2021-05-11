@@ -19,10 +19,10 @@ const config_file = process.argv.slice(2)[0]
       'File not specified as start param. Please inform the filename with its extension as --file in start script.'
     );
 
-let export_opt = process.argv.slice(2)[1] || "xlsx";
+let export_opt = process.argv.slice(2)[1] || 'xlsx';
 
 // Checking command line params for export option
-if ((!(export_opt === 'xlsx' || export_opt === 'txt'))) {
+if (!(export_opt === 'xlsx' || export_opt === 'txt')) {
   console.log(new Error('Export type not specified as start param. Please inform how you wish to export the results.'));
   // For now, we can only export in xlsx and txt, but later on we'll be able to export in pdf. Therefore, we'll leave this code line as is.
   return;
