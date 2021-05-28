@@ -16,8 +16,8 @@ puppeteer.use(AdblockerPlugin({ useCache: false }));
 const config_file = process.argv.slice(2)[0]
   ? process.argv.slice(2)[0]
   : new Error(
-    'File not specified as start param. Please inform the filename with its extension as --file in start script.'
-  );
+      'File not specified as start param. Please inform the filename with its extension as --file in start script.'
+    );
 
 // Defining xlsx as default value.
 let export_opt = 'xlsx';
@@ -33,7 +33,7 @@ if (process.argv.slice(2)[1] === 'xlsx') {
 let filename = `${__dirname}/results/results_${new Date().getTime()}.${export_opt}`;
 
 const configFile = require(`./config/${config_file}`);
-configFile.validator.forEach( async (config) => {
+configFile.validator.forEach(async (config) => {
   const schema = require(`./schema/${config.schema_name[0]}`);
   // let startChromeInDebugMode = async () => {
   //   let operatingSystem = os.platform();
@@ -91,13 +91,9 @@ configFile.validator.forEach( async (config) => {
       page.on('load', async () => {
         await page.waitFor(2000);
         if (page.url() === config.url) {
-          await fs.appendFileSync(
-            filename,
-            `Url validating:  ${page.url()}\n`,
-            (err) => {
-              if (err) throw err;
-            }
-          );
+          await fs.appendFileSync(filename, `Url validating:  ${page.url()}\n`, (err) => {
+            if (err) throw err;
+          });
           //doc.text(path, 10, 10);
           await page.evaluate(() => {
             //Validate first hits.
@@ -115,13 +111,9 @@ configFile.validator.forEach( async (config) => {
             await browser.close();
           }
         } else {
-          await fs.appendFileSync(
-            filename,
-            `Path :  ${page.url()}\n`,
-            (err) => {
-              if (err) throw err;
-            }
-          );
+          await fs.appendFileSync(filename, `Path :  ${page.url()}\n`, (err) => {
+            if (err) throw err;
+          });
           //doc.text(path, 10, 10);
         }
       });
@@ -131,7 +123,7 @@ configFile.validator.forEach( async (config) => {
 
     await runAfterGTMDebug();
 
-    await fs.appendFile(filename, '', () => { });
+    await fs.appendFile(filename, '', () => {});
 
     let cleanupEval = () => {
       console.log('Realizing last eval');
@@ -156,4 +148,4 @@ configFile.validator.forEach( async (config) => {
 
     await process.on('exit', cleanupEval);
   })();
-})
+});
