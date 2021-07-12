@@ -74,7 +74,7 @@
     "request-promise": "^4.2.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2",
+    "nodemon": "^2.0.12",
     "chai": "^4.3.3",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
