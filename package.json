@@ -69,7 +69,7 @@
     "puppeteer-extra-plugin-adblocker": "^2.11.6",
     "puppeteer-extra-plugin-stealth": "^2.4.11",
     "puppeteer-extra-plugin-user-data-dir": "^2.2.7",
-    "puppeteer-extra-plugin-user-preferences": "^2.2.7",
+    "puppeteer-extra-plugin-user-preferences": "^2.2.13",
     "request": "^2.88.2",
     "request-promise": "^4.2.5"
   },
