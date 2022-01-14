@@ -1,3 +1,4 @@
+
 const os = require('os');
 const exec = require('child_process').exec;
 const puppeteer = require('puppeteer-extra');
@@ -6,8 +7,14 @@ const fs = require('fs');
 const bowserjr = require('@dp6/penguin-datalayer-core');
 let resultsArray = [];
 
-// Add stealth plugin and use defaults (all tricks to hide puppeteer usage).
+/* PDF Make */
+const pdfMake = require('pdfmake');
+const fonts = require('./pdf_configs/pdfMake_fonts.json');
+const printer = new pdfMake(fonts);
+let docDefinition = require('./pdf_configs/docDefinition.json');
+/* PDF Make */
 
+// Add stealth plugin and use defaults (all tricks to hide puppeteer usage).
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 puppeteer.use(StealthPlugin());
 const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
@@ -16,20 +23,11 @@ puppeteer.use(AdblockerPlugin({ useCache: false }));
 const config_file = process.argv.slice(2)[0]
   ? process.argv.slice(2)[0]
   : new Error(
-      'File not specified as start param. Please inform the filename with its extension as --file in start script.'
-    );
-
-let export_opt = process.argv.slice(2)[1] || 'xlsx';
-
-// Checking command line params for export option
-if (!(export_opt === 'xlsx' || export_opt === 'txt')) {
-  console.log(new Error('Export type not specified as start param. Please inform how you wish to export the results.'));
-  // For now, we can only export in xlsx and txt, but later on we'll be able to export in pdf. Therefore, we'll leave this code line as is.
-  return;
-}
+    'File not specified as start param. Please inform the filename with its extension as --file in start script.'
+  );
 
 // Defining export extension based on export option extracted from command line params.
-let filename = `${__dirname}/results/results_${new Date().getTime()}.${export_opt}`;
+let filenamePDF = `${new Date().getTime()}.pdf`;
 
 const configFile = require(`./config/${config_file}`);
 configFile.validator.forEach(async (config) => {
@@ -53,7 +51,7 @@ configFile.validator.forEach(async (config) => {
   //           res(JSON.parse(result).webSocketDebuggerUrl);
   //         })
   //         .catch((err) =>
-  //           console.log(
+  //           //console.log(
   //             "Error while trying to pick the Debugger URL. Did you open the chrome instance with debugging port?"
   //           )
   //         );
@@ -81,18 +79,21 @@ configFile.validator.forEach(async (config) => {
     }
 
     await page.exposeFunction('bowser', (event) => {
+      //console.log("Bowser");
       bowserjr.validate(schema, event, function (result) {
         resultsArray.push(result[0]);
       });
     });
 
     async function runAfterGTMDebug() {
+      //console.log("Run After GTM");
       page.on('load', async () => {
         await page.waitFor(2000);
         if (page.url() === config.url) {
-          await fs.appendFileSync(filename, `Url validating:  ${page.url()}\n`, (err) => {
-            if (err) throw err;
-          });
+          docDefinition.content[3].text = `Url validating:  ${page.url()}`;
+          //console.log("Escreveu URL Validate");
+
+
           //doc.text(path, 10, 10);
           await page.evaluate(() => {
             //Validate first hits.
@@ -110,11 +111,13 @@ configFile.validator.forEach(async (config) => {
             await browser.close();
           }
         } else {
-          await fs.appendFileSync(filename, `Path :  ${page.url()}\n`, (err) => {
-            if (err) throw err;
-          });
+          docDefinition.content.push(`Path :  ${page.url()}`);
+          //console.log("Escreveu o path");
           //doc.text(path, 10, 10);
         }
+
+        //pdfCreate()
+
       });
 
       await page.goto(config.url);
@@ -122,7 +125,66 @@ configFile.validator.forEach(async (config) => {
 
     await runAfterGTMDebug();
 
-    await fs.appendFile(filename, '', () => {});
+    let pdfCreate = () => {
+      //console.log("pdfCreate");
+      //console.log(docDefinition);
+
+      bowserjr.validate(schema, {}, function (result) {
+        resultsArray.push(result[0]);
+      });
+
+      resultsArray.forEach((resultObject) => {
+        if (resultObject) {
+          resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/(\r\n|\n|\r)/gm, '');
+          resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/\s/g, '');
+          resultObject.dataLayerObject = resultObject.dataLayerObject.split(',').join(' ');
+          //docDefinition.content.push(`${resultObject.status}, ${resultObject.message}, ${resultObject.dataLayerObject}`);
+          docDefinition.content[6].table.body.push([
+            {
+              text: `${resultObject.status}`,
+              alignment: "center"
+            },
+            {
+              text: `${resultObject.message}`,
+              alignment: "center"
+            },
+            {
+              text: `${resultObject.dataLayerObject}`,
+            }
+          ]);
+        }
+      });
+
+      /* Função Obrigatoria */
+      pdfMake.tableLayouts = {
+        exampleLayout: {
+          hLineWidth: function (i, node) {
+            if (i === 0 || i === node.table.body.length) {
+              return 0;
+            }
+            return (i === node.table.headerRows) ? 2 : 1;
+          },
+          vLineWidth: function (i) {
+            return 0;
+          },
+          hLineColor: function (i) {
+            return i === 1 ? 'black' : '#aaa';
+          },
+          paddingLeft: function (i) {
+            return i === 0 ? 0 : 8;
+          },
+          paddingRight: function (i, node) {
+            return (i === node.table.widths.length - 1) ? 0 : 8;
+          }
+        }
+      };
+      /* ****************** */
+      const pdfDoc = printer.createPdfKitDocument(docDefinition);
+      pdfDoc.pipe(fs.createWriteStream(`results/${filenamePDF}`));
+      //console.log(pdfDoc)
+      pdfDoc.end();
+      console.log(docDefinition.content[6].table.body)
+    }
 
     let cleanupEval = () => {
       console.log('Realizing last eval');
@@ -131,9 +193,12 @@ configFile.validator.forEach(async (config) => {
       });
       resultsArray.forEach((resultObject) => {
         if (resultObject) {
+          let keyName = JSON.parse(resultObject.dataLayerObject).event;
+
           resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/(\r\n|\n|\r)/gm, '');
           resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/\s/g, '');
           resultObject.dataLayerObject = resultObject.dataLayerObject.split(',').join(' ');
+
           fs.appendFileSync(
             filename,
             `${resultObject.status}, ${resultObject.message}, ${resultObject.dataLayerObject}\n`,
@@ -145,6 +210,6 @@ configFile.validator.forEach(async (config) => {
       });
     };
 
-    await process.on('exit', cleanupEval);
+    await process.on('exit', pdfCreate);
   })();
 });

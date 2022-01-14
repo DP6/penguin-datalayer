@@ -1,0 +1,77 @@
+{
+    "defaultStyle": {
+        "font": "Times",
+        "fontSize": 8
+    },
+    "content": [
+        {
+            "text": "PeguinDataLayer Validation results",
+            "style": "header"
+        },
+        "",
+        "",
+        {
+            "text": "",
+            "style": "subheader"
+        },
+        "",
+        "",
+        {
+            "style": "tableExample",
+            "table": {
+                "headerRows": 1,
+                "widths": [
+                    100,
+                    200,
+                    200
+                ],
+                "body": [
+                    [
+                        {
+                            "text": "Status",
+                            "style": "tableHeader"
+                        },
+                        {
+                            "text": "Menssagem",
+                            "style": "tableHeader"
+                        },
+                        {
+                            "text": "Evento",
+                            "style": "tableHeader"
+                        }
+                    ]
+                ]
+            }
+        },
+        "",
+        "",
+        "",
+        ""
+    ],
+    "styles": {
+        "header": {
+			"fontSize": 18,
+			"bold": true,
+			"margin": [0, 0, 0, 10]
+		},
+		"subheader": {
+			"fontSize": 16,
+			"bold": true,
+			"margin": [0, 10, 0, 5]
+		},
+        "tableExample": {
+            "margin": [
+                0,
+                5,
+                0,
+                15
+            ]
+        },
+        "tableHeader": {
+            "bold": true,
+            "fontSize": 10,
+            "color": "black",
+            "alignment": "center"
+        }
+    }
+}
