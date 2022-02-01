@@ -124,6 +124,27 @@ configFile.validator.forEach(async (config) => {
 
     await fs.appendFile(filename, '', () => {});
 
+    async function makePostRequest(body) {
+      const fetch = require('node-fetch');
+
+      let authToken =
+        'eyJhbGciOiJSUzI1NiIsImtpZCI6ImNhMDA2MjBjNWFhN2JlOGNkMDNhNmYzYzY4NDA2ZTQ1ZTkzYjNjYWIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNjE4MTA0NzA4MDU0LTlyOXMxYzRhbGczNmVybGl1Y2hvOXQ1Mm4zMm42ZGdxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNjE4MTA0NzA4MDU0LTlyOXMxYzRhbGczNmVybGl1Y2hvOXQ1Mm4zMm42ZGdxLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTExNTE2NDk2MDUyMzEzMTkxNzY0IiwiaGQiOiJkcDYuY29tLmJyIiwiZW1haWwiOiJnYWJyaWVsLnRlbGxhcm9saUBkcDYuY29tLmJyIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJTSFkwYUFyaFduNmthT29IaW1oanZ3IiwiaWF0IjoxNjQyNjE2MTg2LCJleHAiOjE2NDI2MTk3ODYsImp0aSI6IjIwZDgxMzFiZjE3NzI5MjczMDlkODM4NjliYWNmNGE0YjljNDAzODAifQ.ssWJElWthouO2MwWEU3eI00N5viXJX62p6Ro-zU2sRopcLUFd-IOROW4uZE-QRuPfgZ3gP3hXsotQlujQ4oXaMJo6v74BSK3cBJK1y-w2jMWDDZ3ex2SRfXtYa2pg-35NvYKCXWkuadNNo3S2rh0s1T21-dCZf5fTdVnwX1AxdINhXfpniOgBVLjEOlYPwJfrL6oh2ph6TvWDZ6IA-YwhrbCMZ8vcNWWQYSyeh6k42A89ihdItjxfOljRidu_sAEVFEXbVOsG0OZS_5oESV-gYUWd6hNKMfMYIMZ3ndw-2nCRrNlr1Z-iiwzcnnEPJ1w6dn_d1OdvHh1MLhbhsfzqQ';
+      try {
+        const headers = {
+          Authorization: `Bearer ${authToken}`,
+        };
+        const response = await fetch('https://us-central1-dp6-estudos.cloudfunctions.net/hub-raft-suite-deploy', {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers,
+        });
+        const result = await response.text();
+        console.log(result);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     let cleanupEval = () => {
       console.log('Realizing last eval');
       bowserjr.validate(schema, {}, function (result) {
@@ -131,9 +152,12 @@ configFile.validator.forEach(async (config) => {
       });
       resultsArray.forEach((resultObject) => {
         if (resultObject) {
+          let keyName = JSON.parse(resultObject.dataLayerObject).event;
+
           resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/(\r\n|\n|\r)/gm, '');
           resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/\s/g, '');
           resultObject.dataLayerObject = resultObject.dataLayerObject.split(',').join(' ');
+
           fs.appendFileSync(
             filename,
             `${resultObject.status}, ${resultObject.message}, ${resultObject.dataLayerObject}\n`,
@@ -141,6 +165,68 @@ configFile.validator.forEach(async (config) => {
               if (err) throw err;
             }
           );
+          if (config.hubOption && keyName) {
+            let status = resultObject.status;
+
+            let codes = [];
+
+            switch (status) {
+              case 'OK':
+                codes.push('01-00'); /* Disponibilidade */
+                codes.push('03-00'); /* Completude */
+                codes.push('06-00'); /* Consistência */
+                codes.push('08-00'); /* Uniformidade */
+                break;
+
+              case 'ERROR':
+                if (status.includes('Hit not validated or missed during test')) {
+                  codes.push('01-01'); /* Disponibilidade */
+                } else {
+                  codes.push('01-00'); /* Disponibilidade */
+                }
+
+                if (status.includes('sent without the following property')) {
+                  codes.push('03-01'); /* Completude */
+                }
+                break;
+
+              case 'WARNING':
+                codes.push('01-00'); /* Disponibilidade */
+                codes.push('03-00'); /* Completude */
+
+                if (
+                  status.includes('should be equal to one of the allowed values') ||
+                  status.includes('should match pattern')
+                ) {
+                  codes.push('06-00'); /* Consistência */
+                  codes.push('07-01'); /* Acurácia */
+                  codes.push('08-01'); /* Uniformidade */
+                } else {
+                  codes.push('06-01'); /* Consistência */
+                }
+                break;
+
+              default:
+                break;
+            }
+            codes.forEach(async (code) => {
+              let body = {
+                module: 'penguin-datalayer',
+                spec: 'dp6_site',
+                deploy: '2.0.0',
+                code: code,
+                description: 'Saving collect data',
+                payload: {
+                  status: status,
+                  objectName: 'event',
+                  keyName: keyName,
+                  message: resultObject.message,
+                },
+              };
+
+              makePostRequest(body);
+            });
+          }
         }
       });
     };
