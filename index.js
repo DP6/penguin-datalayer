@@ -66,6 +66,9 @@ configFile.validator.forEach(async (config) => {
     const browser = await puppeteer.launch({ headless: false });
     let page = await browser.newPage();
 
+    // Configure the navigation timeout
+    await page.setDefaultNavigationTimeout(0);
+
     // .pages
     // .then((res) => res[0])
     // .catch((err) => new Error(err));
@@ -115,9 +118,6 @@ configFile.validator.forEach(async (config) => {
           //console.log("Escreveu o path");
           //doc.text(path, 10, 10);
         }
-
-        //pdfCreate()
-
       });
 
       await page.goto(config.url);
@@ -183,33 +183,8 @@ configFile.validator.forEach(async (config) => {
       pdfDoc.pipe(fs.createWriteStream(`results/${filenamePDF}`));
       //console.log(pdfDoc)
       pdfDoc.end();
-      console.log(docDefinition.content[6].table.body)
     }
 
-    let cleanupEval = () => {
-      console.log('Realizing last eval');
-      bowserjr.validate(schema, {}, function (result) {
-        resultsArray.push(result[0]);
-      });
-      resultsArray.forEach((resultObject) => {
-        if (resultObject) {
-          let keyName = JSON.parse(resultObject.dataLayerObject).event;
-
-          resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/(\r\n|\n|\r)/gm, '');
-          resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/\s/g, '');
-          resultObject.dataLayerObject = resultObject.dataLayerObject.split(',').join(' ');
-
-          fs.appendFileSync(
-            filename,
-            `${resultObject.status}, ${resultObject.message}, ${resultObject.dataLayerObject}\n`,
-            (err) => {
-              if (err) throw err;
-            }
-          );
-        }
-      });
-    };
-
-    await process.on('exit', pdfCreate);
+    browser.on('disconnected', pdfCreate);
   })();
 });
