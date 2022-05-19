@@ -1,12 +1,16 @@
 {
   "defaultStyle": {
-    "font": "Times",
+    "font": "Helvetica",
     "fontSize": 8
   },
   "content": [
     {
-      "text": "PeguinDataLayer Validation results",
-      "style": "header"
+      "image": "img/Logo Oficial SemAssinatura Positivo SemBox RGB.png",
+      "width": 50
+    },
+    {
+      "text": "PeguinDataLayer Validation Results",
+      "style": "subheader"
     },
     "",
     "",
@@ -48,7 +52,7 @@
     "header": {
       "fontSize": 18,
       "bold": true,
-      "margin": [0, 0, 0, 10]
+      "margin": [0, 0, 100, 10]
     },
     "subheader": {
       "fontSize": 16,

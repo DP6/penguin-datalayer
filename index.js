@@ -93,8 +93,8 @@ async function browserCrawler(config) {
         resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/(\r\n|\n|\r)/gm, '');
         resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/\s/g, '');
         resultObject.dataLayerObject = resultObject.dataLayerObject.split(',').join(' ');
-        //docDefinition.content.push(`${resultObject.status}, ${resultObject.message}, ${resultObject.dataLayerObject}`);
-        docDefinition.content[6].table.body.push([
+
+        docDefinition.content[7].table.body.push([
           {
             text: `${resultObject.status}`,
             alignment: 'center',
@@ -143,7 +143,6 @@ async function browserCrawler(config) {
 }
 
 configFile.validator.forEach(async (config) => {
-  const schema = require(`./schema/${config.schema_name[0]}`);
   console.log('Iniciando validação...');
   await browserCrawler(config);
   console.log('Validação finalizada.');
