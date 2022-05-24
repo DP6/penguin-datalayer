@@ -16,7 +16,7 @@
     "all-test": "npm run unit-test",
     "test": "npm -- run all-test",
     "run-local": "nodemon index.js config_data.json",
-    "start": "node index.js",
+    "start": "node index.js config_data.json",
     "debug": "nodemon --inspect index.js config_data.json",
     "coverage": "nyc --reporter=lcov --reporter=cobertura npm run unit-test",
     "docs": "jsdoc2md *.js > docs/functions.md"
@@ -64,6 +64,7 @@
     "@dp6/penguin-datalayer-core": "^1.1.3",
     "ajv": "^6.10.2",
     "colors": "^1.4.0",
+    "pdfmake": "^0.2.4",
     "puppeteer": "^2.0.0",
     "puppeteer-extra": "^3.1.11",
     "puppeteer-extra-plugin-adblocker": "^2.11.6",

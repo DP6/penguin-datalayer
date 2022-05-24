@@ -1,0 +1,72 @@
+{
+  "defaultStyle": {
+    "font": "Helvetica",
+    "fontSize": 8
+  },
+  "content": [
+    {
+      "image": "img/Logo Oficial SemAssinatura Positivo SemBox RGB.png",
+      "width": 50
+    },
+    {
+      "text": "PeguinDataLayer Validation Results",
+      "style": "subheader"
+    },
+    "",
+    "",
+    {
+      "text": "",
+      "style": "subheader"
+    },
+    "",
+    "",
+    {
+      "style": "tableExample",
+      "table": {
+        "headerRows": 1,
+        "widths": [100, 200, 200],
+        "body": [
+          [
+            {
+              "text": "Status",
+              "style": "tableHeader"
+            },
+            {
+              "text": "Menssagem",
+              "style": "tableHeader"
+            },
+            {
+              "text": "Evento",
+              "style": "tableHeader"
+            }
+          ]
+        ]
+      }
+    },
+    "",
+    "",
+    "",
+    ""
+  ],
+  "styles": {
+    "header": {
+      "fontSize": 18,
+      "bold": true,
+      "margin": [0, 0, 100, 10]
+    },
+    "subheader": {
+      "fontSize": 16,
+      "bold": true,
+      "margin": [0, 10, 0, 5]
+    },
+    "tableExample": {
+      "margin": [0, 5, 0, 15]
+    },
+    "tableHeader": {
+      "bold": true,
+      "fontSize": 10,
+      "color": "black",
+      "alignment": "center"
+    }
+  }
+}
