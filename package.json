@@ -65,7 +65,7 @@
     "ajv": "^6.10.2",
     "colors": "^1.4.0",
     "pdfmake": "^0.2.4",
-    "puppeteer": "^2.0.0",
+    "puppeteer": "^14.3.0",
     "puppeteer-extra": "^3.1.11",
     "puppeteer-extra-plugin-adblocker": "^2.11.6",
     "puppeteer-extra-plugin-stealth": "^2.4.11",
