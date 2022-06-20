@@ -48,7 +48,7 @@ Para garantir que o hit que foi enviado está estruturado da forma correta e com
 - Config
 
 Tanto o JSON Schema quanto o arquivo de config são gerados através da seguinte planilha:
-[Ludwig - Schema & Config](https://docs.google.com/spreadsheets/d/19FZ7NzUBj50RABrHdJwSBjN9cdz3xHWxILBtlmqLVHs/edit#gid=2104489795)
+[Ludwig - Schema & Config](https://docs.google.com/spreadsheets/d/1U1YbPmRQDvUv4X8m0I8GYNr8pXR8ADYttzKw79NIlcQ/edit#gid=631532070)
 
 O arquivo de configurações para a execução do DataLayer Penguin deve ser inserido na pasta **config**, e o JSON Schema na pasta **schema**, respectivamente
 
