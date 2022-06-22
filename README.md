@@ -126,8 +126,7 @@ A estrutura a seguir é um exemplo de um JSON Schema:
             "type": "object",
             "properties": {
               "key1_sub1": {
-                "type": "number",
-                "enum": [10]
+                "type": "number"
               },
               "key1_sub2": {
                 "type": "string",
@@ -138,8 +137,7 @@ A estrutura a seguir é um exemplo de um JSON Schema:
                 "enum": ["producao"]
               },
               "key1_sub4": {
-                "type": "boolean",
-                "enum": "desktop|mobile|msite"
+                "type": "boolean"
               }
             },
             "required": ["key1_sub1", "key1_sub2", "key1_sub3", "key1_sub4"]
