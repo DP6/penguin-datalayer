@@ -75,13 +75,13 @@
     "request-promise": "^4.2.5"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2",
     "chai": "^4.3.3",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "jsdoc-to-markdown": "^7.0.0",
-    "mocha": "^8.3.1",
+    "mocha": "^10.0.0",
+    "nodemon": "^2.0.2",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "remark": "^13.0.0",

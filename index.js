@@ -1,7 +1,5 @@
-const os = require('os');
 const exec = require('child_process').exec;
 const puppeteer = require('puppeteer-extra');
-const req = require('request-promise');
 const fs = require('fs');
 const bowserjr = require('@dp6/penguin-datalayer-core');
 let resultsArray = [];
