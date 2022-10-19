@@ -11,26 +11,32 @@
   <a href="https://www.codacy.com/gh/DP6/penguin-datalayer/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=DP6/penguin-datalayer&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/afcd617698e744cb8f6f44f4cdc8ddd9"/></a>
 </p>
 
-O Penguin DataLayer é uma ferramenta Open Source desenvolvida pela DP6 que tem como intuito auxiliar no processo de validação da implementação da camada de dados (Data Layer), através de um modelo de dados (schema) que represente com fidelidade as chaves, valores, tipos de dados esperados.
-A ferramenta atua como um crawler, acompanhando os disparos efetuados para o Data Layer, e validando cada objeto enviado com base no schema entregue à esta.
+Read this in other languages: [Português-BR](README.pt-br.md)
 
-## Conteúdo
+The Penguin DataLayer is an Open Source tool developed by DP6 with the objective to help in the validation process of implementing the data layer, by using a schema that faithfully represents the keys, values and expected data types.
+The tool acts as a crawler, following data layer triggers and validating every object sent against a schema.
 
-- [Conteúdo](#conteúdo)
-  - [Instalação](#instalação)
-  - [Como Utilizar](#como-utilizar)
-  - [JSON Schema](#json-schema)
-    - [Tipos Suportados](#tipos-suportados)
-    - [Regras de validação](#regras-de-validação)
-    - [Estrutura do JSON Schema](#estrutura-do-json-schema)
+## Table of contents
 
-### Instalação
+- [Penguin DataLayer](#penguin-datalayer)
+  - [Table of contents](#table-of-contents)
+    - [Install](#install)
+    - [How to use](#how-to-use)
+    - [JSON Schema](#json-schema)
+      - [Supported Types](#supported-types)
+      - [Validation Rules](#validation-rules)
+      - [JSON Schema Structure](#json-schema-structure)
+  - [How to contribute](#how-to-contribute)
+    - [Mandatory Requisites](#mandatory-requisites)
+  - [Support:](#support)
 
-Para instalar a versão atual:
+### Install
+
+To install the current version:
 
 ` npm install -i`
 
-Após a instalação da biblioteca, a estrutura de diretórios deve ser a seguinte:
+After installing the library, the directory structure should look like the following:
 
 ```bash
 ├── config
@@ -39,18 +45,18 @@ Após a instalação da biblioteca, a estrutura de diretórios deve ser a seguin
 └── schema
 ```
 
-### Como Utilizar
+### How to use
 
-O DataLayer Penguin realiza a validação de hits enviados para a Camada de Dados (Data Layer).
-Para garantir que o hit que foi enviado está estruturado da forma correta e com os valores esperados, faz-se necessária a inclusão de dois arquivos que são gerados manualmente, sendo estes:
+The DataLayer Penguin validates every hit sent to the Data Layer.
+To ensure every hit is sent correctly formulated and with the expected values, it's necessary to include two manually generated files:
 
 - JSON Schema
 - Config
 
-Tanto o JSON Schema quanto o arquivo de config são gerados através da seguinte planilha:
+Both config files should be generated through the following sheet:
 [Ludwig - Schema & Config](https://docs.google.com/spreadsheets/d/1U1YbPmRQDvUv4X8m0I8GYNr8pXR8ADYttzKw79NIlcQ/edit#gid=631532070)
 
-O arquivo de configurações para a execução do DataLayer Penguin deve ser inserido na pasta **config**, e o JSON Schema na pasta **schema**, respectivamente
+The config file must be saved in the **config** folder, and the JSON Schema in the **schema** folder. Example:
 
 ```bash
 ├── config
@@ -60,21 +66,21 @@ O arquivo de configurações para a execução do DataLayer Penguin deve ser ins
     ├── schema_example.json
 ```
 
-Para execução do validador, é esperado como parâmetro o arquivo de configuração, conforme demonstrado no exemplo a seguir:
+To execute the validator, you must pass the config file as a parameter:
 
 `npm start config_example.json`
 
-Após executar o comando, o validador iniciará uma instância do _Chromium_, lendo as configurações da URL de início, nome da camada de dados e o JSON Schema para validação.
+After executing this command, the validator will spin up a _Chromium_ instance, reading the initial URL config, data layer name and JSON Schema.
 
-Os hits que forem disparados de forma automática para a camada de dados e estiverem declarados no JSON Schema serão validados de forma automática. Entretanto, o validador necessitará de interação humana caso haja algum hit que necessita de uma ação (click, preenchimento de form, etc.) para ser disparado.
+Every hit sent automatically to the data layer will be automatically validated, however, the validator will need human interaction in case any hit needs interaction to be sent (click, form fill, etc.)
 
-Por padrão, os logs com a validação serão disponibilizados na pasta **results**, em pdf ou xlsx, dependendo do parâmetro que for passado na linha de comando que executa o DataLayer Penguin, como por exemplo:
+By default, the validation logs are available in the folder **results**, in pdf or xlsx format, depending on the parameter defined in the command line when DataLayer Penguin is executed, Example:
 
 ```nodejs
 npm start config_example.json pdf
 ```
 
-ou
+or
 
 ```nodejs
 npm start config_example.json xlsx
@@ -82,11 +88,11 @@ npm start config_example.json xlsx
 
 ### JSON Schema
 
-O JSON Schema é uma estrutura que permite a **validação** de documentos JSON. Esta estrutura é utilizada no projeto pois permite a declaração dos formatos de dados esperados dentro da camada de dados.
+The JSON Schema is a structure that allows the **validation** of JSON documents. This structures is used in the project because it allows for the declaration of expected data in the data layer.
 
-#### Tipos Suportados
+#### Supported Types
 
-Os seguintes tipos de dados são suportados:
+The following types are supported:
 
 - String
 - Number
@@ -94,18 +100,18 @@ Os seguintes tipos de dados são suportados:
 - Object
 - Array
 
-#### Regras de validação
+#### Validation Rules
 
-As seguintes regras para validação são aceitas:
+The following validation rules are accepted:
 
-- **Enum (Equals)**: A ser utilizada quando houver a necessidade de validar a **igualdade** entre o valor informado no schema _versus_ o que foi enviado para a camada de dados
-- **Pattern (Regex - String)**: É possível criar expressões regulares para validar valores das chaves
-- **minItems (Array)**: Valida o número mínimo de itens contidos no array
-- **Required**: Quando houver a obrigatoriedade de validar uma determinada chave
+- **Enum (Equals)**: Used when you need to validate the **equality** between the expected value _versus_ the value sent to the data layer
+- **Pattern (Regex - String)**: It's possible to create regular expressions to validate the keys values
+- **minItems (Array)**: Validates the minimum number of items in the array
+- **Required**: When a value is mandatory for a key
 
-#### Estrutura do JSON Schema
+#### JSON Schema Structure
 
-A estrutura a seguir é um exemplo de um JSON Schema:
+The following is an example of a JSON Schema:
 
 ```json
 {
@@ -150,17 +156,17 @@ A estrutura a seguir é um exemplo de um JSON Schema:
 }
 ```
 
-## Como contribuir
+## How to contribute
 
-Pull requests são bem-vindos! Nós vamos adorar ajuda para evoluir esse modulo. Senta-se livre para navegar por open issues buscando por algo que possa fazer. Caso temha uma nova feature ou bug, por favor abra uma nova issue para ser acompanhada pelo nosso time.
+Pull requests are welcome! We'd love your help to level up this module. Feel free to look at the open issues for something to do. In case you have a new feature request or bug report, please open a new issue so our team can investigate it
 
-### Requisitos obrigatórios
+### Mandatory Requisites
 
-Só serão aceito as contribuições que estiverem seguindo os seguintes requisitos:
+We only accept contributions that follows these requisites:
 
-- [Padrão de commit](https://www.conventionalcommits.org/en/v1.0.0/)
+- [Commit template](https://www.conventionalcommits.org/en/v1.0.0/)
 
-## Suporte:
+## Support:
 
 **DP6 Koopa-troopa Team**
 
