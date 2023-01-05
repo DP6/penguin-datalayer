@@ -14,16 +14,21 @@ let docDefinition = require('./pdf_configs/docDefinition.json');
 /* PDF Make */
 
 // Add stealth plugin and use defaults (all tricks to hide puppeteer usage).
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-puppeteer.use(StealthPlugin());
-const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
-puppeteer.use(AdblockerPlugin({ useCache: false }));
 
-const config_file = process.argv.slice(2)[0]
-  ? process.argv.slice(2)[0]
-  : new Error(
-      'File not specified as start param. Please inform the filenamePDF with its extension as --file in start script.'
-    );
+
+let [config_file, stopAdBlock] = process.argv.slice(2)
+
+config_file?config_file:
+  new Error('File not specified as start param. Please inform the filenamePDF with its extension as --file in start script.');
+
+
+if(stopAdBlock !== "stopAdBlock"){
+  const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+  puppeteer.use(StealthPlugin());
+  const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
+  puppeteer.use(AdblockerPlugin({ useCache: false }));
+}else{}
+console.log(config_file)
 
 // Defining export extension based on export option extracted from command line params.
 let filenamePDF = `${new Date().getTime()}.pdf`;
