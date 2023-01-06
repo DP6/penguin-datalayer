@@ -14,6 +14,8 @@ let docDefinition = require('./pdf_configs/docDefinition.json');
 /* PDF Make */
 
 // Add stealth plugin and use defaults (all tricks to hide puppeteer usage).
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+  puppeteer.use(StealthPlugin());
 
 
 let [config_file, stopAdBlock] = process.argv.slice(2)
@@ -23,9 +25,7 @@ config_file?config_file:
 
 
 if(stopAdBlock !== "stopAdBlock"){
-  const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-  puppeteer.use(StealthPlugin());
-  const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
+    const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
   puppeteer.use(AdblockerPlugin({ useCache: false }));
 }else{}
 console.log(config_file)
