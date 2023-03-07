@@ -64,6 +64,10 @@ Para execução do validador, é esperado como parâmetro o arquivo de configura
 
 `npm start config_example.json`
 
+Para a execução do validador com o adblock pausado basta seguir o exemplo a seguir:
+
+`npm start config_example.json stopAdBlock`
+
 Após executar o comando, o validador iniciará uma instância do _Chromium_, lendo as configurações da URL de início, nome da camada de dados e o JSON Schema para validação.
 
 Os hits que forem disparados de forma automática para a camada de dados e estiverem declarados no JSON Schema serão validados de forma automática. Entretanto, o validador necessitará de interação humana caso haja algum hit que necessita de uma ação (click, preenchimento de form, etc.) para ser disparado.
