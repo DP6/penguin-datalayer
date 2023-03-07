@@ -5,6 +5,9 @@ const req = require('request-promise');
 const fs = require('fs');
 const bowserjr = require('@dp6/penguin-datalayer-core');
 let resultsArray = [];
+let link = []
+
+
 
 /* PDF Make */
 const pdfMake = require('pdfmake');
@@ -15,6 +18,8 @@ let docDefinition = require('./pdf_configs/docDefinition.json');
 
 // Add stealth plugin and use defaults (all tricks to hide puppeteer usage).
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const { strictEqual } = require('assert');
+const { clearConfigCache } = require('prettier');
   puppeteer.use(StealthPlugin());
 
 
@@ -28,16 +33,17 @@ if(stopAdBlock !== "stopAdBlock"){
     const AdblockerPlugin = require('puppeteer-extra-plugin-adblocker');
   puppeteer.use(AdblockerPlugin({ useCache: false }));
 }else{}
-console.log(config_file)
+
 
 // Defining export extension based on export option extracted from command line params.
 let filenamePDF = `${new Date().getTime()}.pdf`;
 
 const configFile = require(`./config/${config_file}`);
 
-async function runAfterGTMDebug(config, page, browser, filenamePDF) {
+async function runAfterGTMDebug(config, page, browser, filenamePDF,url) {
+  
   await page.on('load', async () => {
-    if (page.url() === config.url) {
+    if (page.url() === url) {
       await page.evaluate(async () => {
         //Validate first hits.
         for (let elem of window.dataLayer) {
@@ -45,11 +51,15 @@ async function runAfterGTMDebug(config, page, browser, filenamePDF) {
         }
         window.dataLayer.push_c = window.dataLayer.push;
         window.dataLayer.push = function (obj) {
-          window.dataLayer.push_c(obj);
-          bowser(obj);
+          if(obj.event ==! "optimize.domChange"){
+            window.dataLayer.push_c(obj);
+            bowser(obj)
+            console.log(obj);
+          }
         };
       });
 
+      
       if (config.browserClose) {
         config.time ? await page.waitFor(config.time) : await page.waitFor(0);
         await browser.close();
@@ -60,48 +70,51 @@ async function runAfterGTMDebug(config, page, browser, filenamePDF) {
       });
     }
   });
-
-  await page.goto(config.url);
+  await page.goto(url);
 }
 
-async function browserCrawler(config) {
+async function browserCrawler(config,url) {
   const schema = require(`./schema/${config.schema_name[0]}`);
   const browser = await puppeteer.launch({ headless: false });
-  let page = await browser.newPage();
-
+  let page = await browser.newPage();    
+  
   // Configure the navigation timeout
   await page.setDefaultNavigationTimeout(0);
-
-  if (config.gtmPreviewModeURL) await page.goto(config.gtmPreviewModeURL);
-
+  if (config.gtmPreviewModeURL)await page.goto(config.gtmPreviewModeURL);
   if (config.mobile_enabled === true) {
     await page.emulate(iPhone);
   } else {
     await page.setViewport({ width: 1366, height: 768 });
   }
-
+  
   await page.exposeFunction('bowser', (event) => {
     bowserjr.validate(schema, event, function (result) {
       resultsArray.push(result[0]);
     });
   });
+  await runAfterGTMDebug(config, page, browser, filenamePDF,url);
 
-  await runAfterGTMDebug(config, page, browser, filenamePDF);
-
+  await page.exposeFunction('site', (url) => {
+    link.push(url)
+    link.splice(0,1,url)
+    });
+  
+  await page.evaluate(async () => {
+    site(window.location.href)
+    });
   let pdfCreate = () => {
     bowserjr.validate(schema, {}, function (result) {
       resultsArray.push(result[0]);
     });
-
     resultsArray.forEach((resultObject) => {
       if (resultObject) {
         resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/(\r\n|\n|\r)/gm, '');
         resultObject.dataLayerObject = resultObject.dataLayerObject.replace(/\s/g, '');
         resultObject.dataLayerObject = resultObject.dataLayerObject.split(',').join(' ');
-
+        
         docDefinition.content[7].table.body.push([
           {
-            text: `${resultObject.status}`,
+            text: `${resultObject.status} in ${link[0]}`,
             alignment: 'center',
           },
           {
@@ -114,7 +127,7 @@ async function browserCrawler(config) {
         ]);
       }
     });
-
+    resultsArray = []
     /* Função Obrigatoria */
     pdfMake.tableLayouts = {
       exampleLayout: {
@@ -146,9 +159,15 @@ async function browserCrawler(config) {
 
   browser.on('disconnected', pdfCreate);
 }
-
+let arr = []
 configFile.validator.forEach(async (config) => {
-  console.log('Iniciando validação...');
-  await browserCrawler(config);
-  console.log('Validação finalizada.');
+  for(let elm of config.url){
+    console.log('Iniciando validação...');
+    arr.push(elm)
+    arr.splice(0,1,elm)
+    await browserCrawler(config,arr[0]);
+    console.log('Validação finalizada.');
+  }
+   
+  
 });
